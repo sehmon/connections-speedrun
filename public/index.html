@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Tracker</title>
+</head>
+<body>
+    <h1>Welcome to Web Tracker</h1>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let users;
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight);
+        background(220);
+
+        users = {};
+
+        // Setup socket connection
+        const socket = io.connect('http://localhost:3000');
+
+        socket.on('currentUsers', data => {
+          console.log('got current user event from server');
+          users = data;
+          redraw(); // Ask p5.js to redraw the canvas
+        });
+      }
+
+      function draw() {
+        background(220); // Clear the canvas
+
+        console.log('draw loop!');
+        console.log(users);
+          console.log('users array is valid type, drawing circle for each user');
+        for (const [ip, count] of Object.entries(users)) {
+          const x = random(width);
+          const y = random(height);
+
+          console.log(`drawing circle for user ${ip} at location (${x},${y})`);
+          fill(50, 150, 255);
+          ellipse(x, y, 24, 24); // Draws a circle for each user
+
+          fill(0);
+          textAlign(CENTER, CENTER);
+          text(ip, x, y);
+        }
+
+        noLoop(); // Stops draw loop since we're redrawing manually on socket data
+      }
+    </script>
+
+</body>
+</html>
+
